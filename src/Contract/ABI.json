@@ -1,0 +1,224 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "name",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address[]",
+        "name": "signeeAddresses",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "signedDocUrls",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "addDocument",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "docIdx",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "signeeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "addSigneeToDoc",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "docIdx",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "signeeIdx",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "signedDocUrl",
+        "type": "bytes32"
+      }
+    ],
+    "name": "sign",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "signee",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "signedDocUrl",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "messsage",
+        "type": "string"
+      }
+    ],
+    "name": "SignedDocument",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "documents",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "name",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "docId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDocName",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "docId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "signeeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDocUrl",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "docId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "signeeId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSigneeDoc",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getTotalDoc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
