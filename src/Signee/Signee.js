@@ -5,14 +5,45 @@ import Modal from 'antd/es/modal';
 import Form from 'antd/es/form';
 import Input from 'antd/es/input';
 import Steps from 'antd/es/steps';
+import Select from 'antd/es/select';
 
 import {getSigneeList, createSignee, reloadETHCoin, updateSignee} from "../crud";
 import {useAppUIContext} from "../App";
 import Spin from "antd/es/spin";
+import EthScanLink from "../EthScanLink/EthScanLink";
+import SigneeEthAmount from "../SigneeEthAmount/SigneeEthAmount";
+
+
+export const SigneeSelect = ({onChange, mode = 'single', value}) => {
+  const [signees, setSigneess] = useState([]);
+  console.log('value', value)
+  async function getList() {
+    const list = await getSigneeList();
+    return setSigneess(list);
+  }
+
+  useEffect(() => {
+    getList();
+  }, []);
+  return <Select
+    value={value}
+    mode={mode}
+    onChange={onChange}
+    style={{width: '100%'}}>
+    {
+      signees
+        .filter(s => !s.signedTransaction)
+        .map(s => {
+        return <Select.Option value={s.address}>{s.name}</Select.Option>
+      })
+    }
+  </Select>
+}
 
 
 function Signee(props) {
-  const uiContext = useAppUIContext()
+  const uiContext = useAppUIContext();
+
   const [dataSource, setDataSource] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,7 +60,7 @@ function Signee(props) {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    getList();
+    uiContext.setLoadSigneeList(true);
   }
 
   const handleShowModal = (isEdit) => {
@@ -57,6 +88,8 @@ function Signee(props) {
       reloadETHCoin(formValues.address, formValues.ethAmount).then(async function (rs) {
         if (rs) {
           uiContext.openNotification('success', 'Reload Success');
+          formValues.reloadTransactions = formValues.reloadTransactions || [];
+          formValues.reloadTransactions.push(rs);
           await updateSignee(formValues.address, formValues);
           setStep(3);
         } else {
@@ -69,6 +102,7 @@ function Signee(props) {
       handleCloseModal();
       setLoading(false)
     }
+    uiContext.setLoadSigneeList(true);
   }
 
   async function getList() {
@@ -84,8 +118,11 @@ function Signee(props) {
 
   useEffect(() => {
     forceUpdate();
-    getList();
-  }, []);
+    if(uiContext.loadSigneeList) {
+      getList();
+      uiContext.setLoadSigneeList(false);
+    }
+  }, [uiContext]);
   const columns = [
     {
       title: 'Name',
@@ -96,14 +133,16 @@ function Signee(props) {
       title: 'ETH Amount',
       dataIndex: 'ethAmount',
       key: 'ethAmount',
+      render: (_, rowData) => {
+        return <SigneeEthAmount address={rowData.address}/>
+      }
     },
     {
       title: 'ETH Address',
       dataIndex: 'address',
       key: 'address',
       render: (value) => {
-        return <a href={`https://ropsten.etherscan.io/address/0x027013Bfdd7410B9ae27B3550784D8e62c393f4F`}
-                  target={'_blank'}>{value}</a>
+        return <EthScanLink display={value} type={'address'} value={value}/>
       }
     },
     {
@@ -117,7 +156,7 @@ function Signee(props) {
       render: (_, rowData) => {
         return <div>
           <Button style={{marginRight: 10}} type={'small'} onClick={() => onReload(rowData)}>Reload</Button>
-          <a href={`https://ropsten.etherscan.io/address/${rowData.address}`} target={'_blank'}>View On BlockChain </a>
+          <EthScanLink display={'View On BlockChain'} type={'address'} value={rowData.address}/>
         </div>
       }
     }
@@ -126,7 +165,7 @@ function Signee(props) {
     <div>
       <div>
         <h1> Signee <Button type={'primary'} onClick={handleShowModal} style={{float: 'right'}}>
-          New
+          New Signee
         </Button></h1>
 
       </div>

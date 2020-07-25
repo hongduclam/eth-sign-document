@@ -2,6 +2,10 @@ import React, {createContext, useContext, useState} from 'react';
 import Spin from 'antd/es/spin'
 import Signee from "./Signee/Signee";
 import notification from "antd/es/notification";
+import Document from "./Document/Document";
+import {store} from "./setupContract";
+import EthScanLink from "./EthScanLink/EthScanLink";
+import SigneeEthAmount from "./SigneeEthAmount/SigneeEthAmount";
 
 const AppUIContext = createContext();
 
@@ -23,11 +27,16 @@ const openNotification = (type, message) => {
 
 export function AppUIContextProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [loadSigneeList, setLoadSigneeList] = useState(true);
 
   const value = {
     setLoading: (value) => {
       setIsLoading(value);
     },
+    setLoadSigneeList: (value) => {
+      setLoadSigneeList(value);
+    },
+    loadSigneeList: loadSigneeList,
     openNotification
   };
 
@@ -46,10 +55,22 @@ function App() {
     <AppUIContextProvider>
       <div className="App" style={{margin: '2em'}}>
         <header className="App-header">
-          <h1>Carto Sign POC</h1>
+          <h3>Carto Sign Contract - Address:
+            <EthScanLink display={store.get('contractAddress')} type={'address'} value={store.get('contractAddress')}/>
+          </h3>
+
+          <h3>Admin Address:
+            <EthScanLink display={store.get('adminAddress')} type={'address'} value={store.get('adminAddress')}/>
+            - <SigneeEthAmount address={store.get('adminAddress')}/>
+          </h3>
         </header>
+        <hr/>
         <div>
           <Signee />
+        </div>
+        <hr />
+        <div>
+          <Document />
         </div>
       </div>
     </AppUIContextProvider>
