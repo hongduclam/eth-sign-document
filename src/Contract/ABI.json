@@ -71,7 +71,7 @@
       },
       {
         "internalType": "bytes32",
-        "name": "signedDocUrl",
+        "name": "signedDocFileName",
         "type": "bytes32"
       }
     ],
@@ -168,12 +168,12 @@
         "type": "uint256"
       }
     ],
-    "name": "getDocUrl",
+    "name": "getSigneeDoc",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "address",
         "name": "",
-        "type": "bytes32"
+        "type": "address"
       }
     ],
     "payable": false,
@@ -194,12 +194,12 @@
         "type": "uint256"
       }
     ],
-    "name": "getSigneeDoc",
+    "name": "getSigneeDocFileName",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "bytes32",
         "name": "",
-        "type": "address"
+        "type": "bytes32"
       }
     ],
     "payable": false,

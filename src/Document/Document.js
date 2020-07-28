@@ -6,7 +6,7 @@ import Form from 'antd/es/form';
 import Input from 'antd/es/input';
 import Tag from 'antd/es/tag';
 
-import {getDocumentList, createDocument, signDocument, getBalance} from "../crud";
+import {getDocumentList, createDocument, signDocument, getBalance, getDocumentSigneesList} from "../crud";
 import {useAppUIContext} from "../App";
 import Spin from "antd/es/spin";
 import {SigneeSelect} from "../Signee/Signee";
@@ -14,6 +14,7 @@ import EthScanLink from "../EthScanLink/EthScanLink";
 
 
 function SignModal({onCloseModal, onOk, documentData = {}, showModal = false}) {
+  console.log('documentData', documentData)
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({});
   const uiContext = useAppUIContext()
@@ -61,7 +62,7 @@ function SignModal({onCloseModal, onOk, documentData = {}, showModal = false}) {
     setFormValues({
       name: documentData.name
     })
-  }, [documentData]);
+  }, [showModal]);
 
   console.log('formValues', formValues, documentData);
 
@@ -93,8 +94,12 @@ function SignModal({onCloseModal, onOk, documentData = {}, showModal = false}) {
         <Form.Item
           label="Signee"
         >
-          <SigneeSelect value={formValues.signeeAddresse}
-                        onChange={(value) => handleFormChange('signeeAddresse', value)}/>
+          {
+            documentData && documentData.transaction &&
+            <SigneeSelect value={formValues.signeeAddresse}
+                          dataSource={() => getDocumentSigneesList(documentData.transaction.transactionHash)}
+                          onChange={(value) => handleFormChange('signeeAddresse', value)}/>
+          }
         </Form.Item>
       </Form>
     </Spin>
@@ -150,18 +155,18 @@ function Document(props) {
 
   const onSign = (row) => {
     console.log(row);
-    setFormValues(row);
     setShowSignModal(true);
+    setFormValues(row);
   }
 
   const handleSignSuccess = () => {
-    getList();
-    setFormValues({})
+    setFormValues({});
+    handleCloseModal();
   }
 
   const onNew = () => {
     setFormValues({});
-    handleShowModal(true);
+    handleShowModal(false);
   }
 
   useEffect(() => {
@@ -175,20 +180,27 @@ function Document(props) {
       key: 'name',
     },
     {
+      title: 'Created Transaction',
+      key: 'Transaction',
+      render: (_, rowData) => {
+        return <EthScanLink display={`View BlockChain Tranx`} type={'tx'} value={rowData.transaction.transactionHash}/>
+      }
+    },
+    {
       title: 'Require Signees',
       dataIndex: 'signees',
       key: 'signees',
-      render: (signees) => {
+      render: (signees, rowData) => {
         function renderLink(name, transacionId) {
           return <EthScanLink display={`${name} (Signeed)`} type={'tx'} value={transacionId}/>
         }
 
         return <div>
           {
-            signees.map(s => {
+            rowData.signees.map(s => {
               return <Tag color={s.signedTransaction ? 'green' : 'red'} closable={false} style={{marginRight: 3}}>
                 {
-                  s.signedTransaction ? renderLink(s.name, s.s.signedTransaction.transactionHash) : <span>{s.name} (Not Signeed)</span>
+                  s.signedTransaction ? renderLink(s.name, s.signedTransaction.transactionHash) : <span>{s.name} (Not Signeed)</span>
                 }
               </Tag>
             })
@@ -238,7 +250,7 @@ function Document(props) {
 
       </div>
       <Table dataSource={dataSource} columns={columns} rowKey={'address'}/>
-      <SignModal onOk={handleSignSuccess} onCloseModal={() => setShowSignModal(false)} showModal={showSignModal}
+      <SignModal onOk={handleSignSuccess} onCloseModal={() => setShowSignModal(false) && setFormValues({})} showModal={showSignModal}
                  documentData={formValues}/>
       <Modal
         title="Create Document"
@@ -270,7 +282,8 @@ function Document(props) {
                 label="Signees"
                 name="Require Signees"
               >
-                <SigneeSelect value={formValues.signeeAddresses} mode={'multiple'}
+                <SigneeSelect value={formValues.signeeAddresses}
+                              mode={'multiple'}
                               onChange={(value) => handleFormChange('signeeAddresses', value)}/>
               </Form.Item>
             </>

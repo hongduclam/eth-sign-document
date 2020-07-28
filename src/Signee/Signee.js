@@ -14,17 +14,17 @@ import EthScanLink from "../EthScanLink/EthScanLink";
 import SigneeEthAmount from "../SigneeEthAmount/SigneeEthAmount";
 
 
-export const SigneeSelect = ({onChange, mode = 'single', value}) => {
+export const SigneeSelect = ({onChange, mode = 'single', value, dataSource = getSigneeList}) => {
   const [signees, setSigneess] = useState([]);
   console.log('value', value)
   async function getList() {
-    const list = await getSigneeList();
+    const list = await dataSource();
     return setSigneess(list);
   }
 
   useEffect(() => {
     getList();
-  }, []);
+  }, [dataSource]);
   return <Select
     value={value}
     mode={mode}
@@ -65,6 +65,7 @@ function Signee(props) {
 
   const handleShowModal = (isEdit) => {
     setShowModal(true);
+    uiContext.setLoadSigneeList(false);
     !isEdit && setFormValues({})
   }
 
@@ -134,7 +135,7 @@ function Signee(props) {
       dataIndex: 'ethAmount',
       key: 'ethAmount',
       render: (_, rowData) => {
-        return <SigneeEthAmount address={rowData.address}/>
+        return <SigneeEthAmount refesh={uiContext.loadSigneeList} address={rowData.address}/>
       }
     },
     {

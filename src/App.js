@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 import Spin from 'antd/es/spin'
 import Signee from "./Signee/Signee";
 import notification from "antd/es/notification";
@@ -6,6 +6,7 @@ import Document from "./Document/Document";
 import {store} from "./setupContract";
 import EthScanLink from "./EthScanLink/EthScanLink";
 import SigneeEthAmount from "./SigneeEthAmount/SigneeEthAmount";
+import {getSystemConfig, getTotalDoc} from "./crud";
 
 const AppUIContext = createContext();
 
@@ -51,17 +52,23 @@ export function AppUIContextProvider({ children }) {
 
 
 function App() {
+  const [systemConfig, setSystemConfig] = useState({});
+  useEffect(() => {
+    getSystemConfig().then(rs => {
+      setSystemConfig(rs)
+    })
+  }, []);
   return (
     <AppUIContextProvider>
       <div className="App" style={{margin: '2em'}}>
         <header className="App-header">
           <h3>Carto Sign Contract - Address:
-            <EthScanLink display={store.get('contractAddress')} type={'address'} value={store.get('contractAddress')}/>
+            <EthScanLink display={systemConfig.contractAddress} type={'address'} value={systemConfig.contractAddress}/>
           </h3>
 
           <h3>Admin Address:
-            <EthScanLink display={store.get('adminAddress')} type={'address'} value={store.get('adminAddress')}/>
-            - <SigneeEthAmount address={store.get('adminAddress')}/>
+            <EthScanLink display={systemConfig.adminAddress} type={'address'} value={systemConfig.adminAddress}/>
+            - <SigneeEthAmount address={systemConfig.adminAddress}/>
           </h3>
         </header>
         <hr/>

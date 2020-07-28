@@ -3,7 +3,6 @@ pragma solidity ^0.5.0;
 contract CartoSign {
     struct Document {
         bytes32 name;
-        bytes32 docFileName;
         address[] signeeAddresses;
         bytes32[] signedDocFileNames;
     }
@@ -46,8 +45,8 @@ contract CartoSign {
         return documents[docId].name;
     }
 
-    function addDocument(bytes32 name, bytes32 docFileUrl, address[] memory signeeAddresses, bytes32[] memory signedDocUrls) public returns (uint) {
-        documents.push(Document(name, docFileUrl, signeeAddresses, signedDocUrls));
+    function addDocument(bytes32 name, address[] memory signeeAddresses, bytes32[] memory signedDocUrls) public returns (uint) {
+        documents.push(Document(name, signeeAddresses, signedDocUrls));
         return documents.length;
     }
 
